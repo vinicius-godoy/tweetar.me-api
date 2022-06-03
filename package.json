@@ -1,0 +1,27 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinicius-godoy/fullstack-challenge-backend.git"
+  },
+  "keywords": [
+    "backend",
+    "api",
+    "back"
+  ],
+  "author": {
+    "name": "Vinícius Godoy",
+    "email": "v.godoyrodrigues@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vinicius-godoy/fullstack-challenge-backend/issues"
+  },
+  "homepage": "https://github.com/vinicius-godoy/fullstack-challenge-backend#readme"
+}
