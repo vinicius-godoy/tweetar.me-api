@@ -4,8 +4,10 @@
   "description": "",
   "main": "server.js",
   "type": "module",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +22,6 @@
     "name": "Vinícius Godoy",
     "email": "v.godoyrodrigues@gmail.com"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/vinicius-godoy/fullstack-challenge-backend/issues"
   },
