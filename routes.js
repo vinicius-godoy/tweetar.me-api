@@ -6,7 +6,13 @@ export const router = new Router()
 const prisma = new PrismaClient()
 
 router.get('/tweets', async ctx => {
-  const tweets = await prisma.tweet.findMany()
+  const tweets = ctx.query.id
+    ? await prisma.tweet.findUnique({
+      where: {
+        id: ctx.query.id,
+      }
+    })
+    : await prisma.tweet.findMany()
 
   ctx.body = tweets
 })
@@ -22,4 +28,24 @@ router.post('/tweets', async ctx => {
   })
 
   ctx.body = doc
+})
+
+router.delete('/tweets', async ctx => {
+  if (!ctx.query.id) {
+    ctx.status = 400
+    ctx.body = { message: 'Bad Request', description: 'No tweet id informed.' }
+    return
+  }
+
+  try {
+    const doc = await prisma.tweet.delete({
+      where: {
+        id: ctx.query.id,
+      }
+    })
+    ctx.body = doc
+  } catch (error) {
+    ctx.status = 404
+    ctx.body = { message: 'Not found', description: 'Tweet does not exist.' }
+  }
 })
