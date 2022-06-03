@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String
+  username String
+
+  tweets Tweet[]
+  likes  Like[]
+}
+
+model Tweet {
+  id     String @id @default(cuid())
+  userId String
+  text   String
+
+  user User @relation(fields: [userId], references: [id])
+
+  likes Like[]
+
+  @@index([userId])
+}
+
+model Like {
+  userId  String
+  tweetId String
+
+  user  User  @relation(fields: [userId], references: [id])
+  tweet Tweet @relation(fields: [tweetId], references: [id])
+
+  @@id([userId, tweetId])
+  @@index([userId])
+  @@index([tweetId])
+}
