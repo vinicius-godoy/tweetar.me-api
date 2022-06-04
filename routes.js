@@ -26,7 +26,11 @@ router.post('/signup', async ctx => {
       }
     })
 
-    ctx.body = { ...user, password: undefined }
+    const accessToken = jwt.sign({
+      sub: user.id
+    }, process.env.JWT_SECRET, { expiresIn: '24h' })
+
+    ctx.body = { ...user, accessToken, password: undefined }
   } catch (error) {
     const [httpCode, payload] = errorHandler(error)
     ctx.status = httpCode
