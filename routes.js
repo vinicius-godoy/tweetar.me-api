@@ -75,9 +75,18 @@ router.get('/tweets', async ctx => {
       ? await prisma.tweet.findUnique({
         where: {
           id: ctx.query.id,
+        },
+        include: {
+          user: true,
+          likes: true,
         }
       })
-      : await prisma.tweet.findMany()
+      : await prisma.tweet.findMany({
+        include: {
+          user: true,
+          likes: true,
+        }
+      })
 
     ctx.body = tweets
   } catch (error) {
