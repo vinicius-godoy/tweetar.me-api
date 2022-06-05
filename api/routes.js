@@ -82,6 +82,9 @@ router.get('/tweets', async ctx => {
         }
       })
       : await prisma.tweet.findMany({
+        orderBy: [{
+          created_at: 'desc',
+        }],
         include: {
           user: true,
           likes: true,
