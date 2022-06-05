@@ -118,19 +118,32 @@ router.post('/tweets', async ctx => {
 })
 
 router.delete('/tweets', async ctx => {
-  if (!ctx.query.id) {
-    ctx.status = 400
-    ctx.body = { message: 'Bad Request', description: 'No tweet id informed.' }
-    return
-  }
-
   try {
-    const tweet = await prisma.tweet.delete({
+    if (!ctx.query.id) {
+      ctx.status = 400
+      ctx.body = { status: 400, message: 'Bad Request', description: 'No tweet id informed.' }
+      return
+    }
+
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+    const tweet = await prisma.tweet.findUnique({
       where: {
         id: ctx.query.id,
       }
     })
-    ctx.body = tweet
+
+    if (tweet.userId === payload.sub) {
+      const tweet = await prisma.tweet.delete({
+        where: {
+          id: ctx.query.id,
+        }
+      })
+      ctx.body = tweet
+    }
+
+    ctx.status = 403
+    ctx.body = { status: 403, message: 'Forbidden' }
   } catch (error) {
     const [httpCode, payload] = errorHandler(error)
     ctx.status = httpCode
