@@ -150,3 +150,55 @@ router.delete('/tweets', async ctx => {
     ctx.body = payload
   }
 })
+
+router.post('/likes', async ctx => {
+  try {
+    if (!ctx.query.tweetId) {
+      ctx.status = 400
+      ctx.body = { status: 400, message: 'Bad Request', description: 'No tweet id informed.' }
+      return
+    }
+
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const like = await prisma.like.create({
+      data: {
+        userId: payload.sub,
+        tweetId: ctx.query.tweetId,
+      }
+    })
+    ctx.body = like
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
+
+router.delete('/likes', async ctx => {
+  try {
+    if (!ctx.query.tweetId) {
+      ctx.status = 400
+      ctx.body = { status: 400, message: 'Bad Request', description: 'No tweet id informed.' }
+      return
+    }
+
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const like = await prisma.like.delete({
+      where: {
+        userId_tweetId: {
+          userId: payload.sub,
+          tweetId: ctx.query.tweetId,
+        }
+      }
+    })
+    ctx.body = like
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
