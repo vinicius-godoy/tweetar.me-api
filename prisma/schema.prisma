@@ -13,20 +13,23 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  name     String
-  email    String @unique
-  username String @unique
-  password String
+  id         String   @id @default(cuid())
+  avatar     String   @default("blue")
+  name       String
+  email      String   @unique
+  username   String   @unique
+  password   String
+  created_at DateTime @default(now())
 
   tweets Tweet[]
   likes  Like[]
 }
 
 model Tweet {
-  id     String @id @default(cuid())
-  userId String
-  text   String
+  id         String   @id @default(cuid())
+  userId     String
+  text       String
+  created_at DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
