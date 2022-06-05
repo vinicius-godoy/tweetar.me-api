@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-import { errorHandler } from './utils/errorHandler.js'
+import { errorHandler } from '../utils/errorHandler.js'
 
 export const router = new Router()
 
