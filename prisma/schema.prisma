@@ -21,8 +21,9 @@ model User {
   password   String
   created_at DateTime @default(now())
 
-  tweets Tweet[]
-  likes  Like[]
+  tweets    Tweet[]
+  likes     Like[]
+  bookmarks Bookmark[]
 }
 
 model Tweet {
@@ -33,7 +34,8 @@ model Tweet {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  likes Like[]
+  likes     Like[]
+  bookmarks Bookmark[]
 
   @@index([userId])
 }
@@ -41,6 +43,19 @@ model Tweet {
 model Like {
   userId  String
   tweetId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tweetId])
+  @@index([userId])
+  @@index([tweetId])
+}
+
+model Bookmark {
+  userId     String
+  tweetId    String
+  created_at DateTime @default(now())
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)

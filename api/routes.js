@@ -285,3 +285,94 @@ router.delete('/likes', async ctx => {
     ctx.body = payload
   }
 })
+
+router.get('/bookmarks', async ctx => {
+  try {
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const bookmark = ctx.query.tweetId
+      ? await prisma.bookmark.findUnique({
+        where: {
+          userId_tweetId: {
+            userId: payload.sub,
+            tweetId: ctx.query.tweetId,
+          }
+        }
+      })
+      : await prisma.bookmark.findMany({
+        where: {
+          userId: payload.sub,
+        },
+        orderBy: [{
+          created_at: 'desc',
+        }],
+        include: {
+          tweet: {
+            include: {
+              user: true,
+              likes: true,
+            }
+          },
+        }
+      })
+
+    ctx.body = bookmark
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
+
+router.post('/bookmarks', async ctx => {
+  try {
+    if (!ctx.query.tweetId) {
+      ctx.status = 400
+      ctx.body = { status: 400, message: 'Bad Request', description: 'No tweet id informed.' }
+      return
+    }
+
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const bookmark = await prisma.bookmark.create({
+      data: {
+        userId: payload.sub,
+        tweetId: ctx.query.tweetId,
+      }
+    })
+    ctx.body = bookmark
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
+
+router.delete('/bookmarks', async ctx => {
+  try {
+    if (!ctx.query.tweetId) {
+      ctx.status = 400
+      ctx.body = { status: 400, message: 'Bad Request', description: 'No tweet id informed.' }
+      return
+    }
+
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const bookmark = await prisma.bookmark.delete({
+      where: {
+        userId_tweetId: {
+          userId: payload.sub,
+          tweetId: ctx.query.tweetId,
+        }
+      }
+    })
+    ctx.body = bookmark
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
