@@ -65,6 +65,58 @@ router.get('/login', async ctx => {
   ctx.body = { ...user, accessToken, password: undefined }
 })
 
+router.get('/users', async ctx => {
+  try {
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: payload.sub,
+      }
+    })
+
+    ctx.body = { ...user, password: undefined }
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
+
+router.patch('/users', async ctx => {
+  try {
+    if (!ctx.request.body) {
+      ctx.status = 400
+      ctx.body = { status: 400, message: 'Bad Request' }
+      return
+    }
+
+    const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+
+    const user = await prisma.user.update({
+      where: {
+        id: payload.sub,
+      },
+      data: {
+        avatar: ctx.request.body?.avatar,
+        name: ctx.request.body?.name,
+        email: ctx.request.body?.email,
+        username: ctx.request.body?.username,
+      },
+    })
+
+    ctx.body = { ...user, password: undefined }
+  } catch (error) {
+    const [httpCode, payload] = errorHandler(error)
+    ctx.status = httpCode
+    ctx.body = payload
+  }
+})
+
 router.get('/tweets', async ctx => {
   try {
     const [, token] = ctx.request.headers?.authorization?.split(' ') ?? []
