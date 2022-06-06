@@ -143,6 +143,7 @@ router.delete('/tweets', async ctx => {
         }
       })
       ctx.body = tweet
+      return
     }
 
     ctx.status = 403
